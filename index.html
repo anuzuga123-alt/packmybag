@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pack My Bag</title>
+  <meta name="description" content="Plan smarter trips: upload item photos, build a packing list, and find the right bag with real-time weight & capacity tips." />
+
+  <!-- PWA Meta -->
+  <meta name="theme-color" content="#0b0c10" />
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <link rel="icon" href="icon-192.png">
+  <style>
+    body { font-family: sans-serif; background:#0b0c10; color:#fff; padding:20px; }
+    h1 { color:#a3e635; }
+    button { padding:10px 20px; border-radius:8px; border:none; cursor:pointer; }
+    .primary { background:#a3e635; color:#000; font-weight:bold; }
+  </style>
+</head>
+<body>
+  <h1>🎒 Pack My Bag</h1>
+  <p>Plan, pack, and optimize your travel bag with smart suggestions. This app works offline too!</p>
+
+  <button class="primary" onclick="alert('Imagine packing items here!')">Add Item</button>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(() => {
+        console.log('Service Worker Registered');
+      });
+    }
+  </script>
+</body>
+</html>
