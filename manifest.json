@@ -2,7 +2,7 @@
   "name": "Pack My Bag",
   "short_name": "PackBag",
   "description": "Plan, pack, and optimize your travel bag with smart suggestions.",
-  "start_url": "./index.html",
+  "start_url": "/packmybag/index.html",
   "display": "standalone",
   "background_color": "#0b0c10",
   "theme_color": "#0b0c10",
