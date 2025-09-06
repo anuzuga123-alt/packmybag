@@ -10,13 +10,31 @@
   <meta name="theme-color" content="#0b0c10" />
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
-
   <link rel="icon" href="icon-192.png">
+
   <style>
-    body { font-family: sans-serif; background:#0b0c10; color:#fff; padding:20px; }
-    h1 { color:#a3e635; }
-    button { padding:10px 20px; border-radius:8px; border:none; cursor:pointer; }
-    .primary { background:#a3e635; color:#000; font-weight:bold; }
+    body {
+      font-family: sans-serif;
+      background:#0b0c10;
+      color:#fff;
+      padding:20px;
+      margin:0;
+    }
+    h1 {
+      color:#a3e635;
+    }
+    button {
+      padding:10px 20px;
+      border-radius:8px;
+      border:none;
+      cursor:pointer;
+      margin-top: 10px;
+    }
+    .primary {
+      background:#a3e635;
+      color:#000;
+      font-weight:bold;
+    }
   </style>
 </head>
 <body>
@@ -27,9 +45,9 @@
 
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').then(() => {
-        console.log('Service Worker Registered');
-      });
+      navigator.serviceWorker.register('./sw.js')
+        .then(() => console.log('Service Worker Registered'))
+        .catch(err => console.error('SW registration failed:', err));
     }
   </script>
 </body>
