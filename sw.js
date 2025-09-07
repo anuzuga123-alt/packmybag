@@ -1,4 +1,4 @@
-const CACHE_NAME = "packmybag-cache-v2"; // bump version when updating
+const CACHE_NAME = "packmybag-cache";
 const OFFLINE_URLS = [
   "./index.html",
   "./manifest.json",
@@ -6,42 +6,31 @@ const OFFLINE_URLS = [
   "./icon-512.png"
 ];
 
-// Install event → pre-cache important files
+// Install and cache essentials
 self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(OFFLINE_URLS);
-    })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(OFFLINE_URLS))
   );
   self.skipWaiting();
 });
 
-// Activate event → remove old caches
+// Auto-update old service workers
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
-      Promise.all(
-        keys.filter(key => key !== CACHE_NAME)
-            .map(key => caches.delete(key))
-      )
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
     )
   );
   self.clients.claim();
 });
 
-// Fetch event → serve cached first, then fallback to network
+// Network first, fallback to cache
 self.addEventListener("fetch", event => {
   event.respondWith(
-    caches.match(event.request).then(response => {
-      if (response) {
-        return response; // serve from cache
-      }
-      return fetch(event.request).catch(() => {
-        // If offline and request was for HTML page → fallback
-        if (event.request.headers.get("accept").includes("text/html")) {
-          return caches.match("./index.html");
-        }
-      });
-    })
+    fetch(event.request).then(response => {
+      const copy = response.clone();
+      caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+      return response;
+    }).catch(() => caches.match(event.request))
   );
 });
