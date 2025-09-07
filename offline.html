@@ -1,21 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Pack My Bag – Offline</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <style>
-    body {
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      height: 100vh; background: #2980b9; color: #fff;
-      font-family: sans-serif; text-align: center;
-    }
-    h1 { font-size: 1.5rem; }
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Offline — Your Packing Friend</title>
+<style>
+  body{font-family:Inter,system-ui,Arial;text-align:center;padding:40px;background:#f6fbff;color:#04263b}
+  h1{color:#0284c7}
+  p{color:#64748b}
+  button{background:#0284c7;color:#fff;border:none;padding:10px 14px;border-radius:8px}
+</style>
 </head>
 <body>
-  <h1>🌐 Oops, you're offline!</h1>
-  <p>Don't worry, your packing data is safe.<br/>Reconnect to sync.</p>
+  <h1>You're Offline</h1>
+  <p>Your saved trips & packing lists are still available. Reconnect to sync new features.</p>
+  <button onclick="location.reload()">Retry</button>
 </body>
 </html>
