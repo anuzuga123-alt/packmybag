@@ -4,125 +4,198 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pack My Bag</title>
-  <meta name="description" content="Plan smarter trips: upload item photos, build a packing list, and find the right bag with real-time weight & capacity tips." />
-
-  <!-- PWA Meta -->
-  <meta name="theme-color" content="#0b0c10" />
+  <meta name="description" content="Plan smarter trips: build your packing list with categories, track progress, and pack stress-free." />
+  <meta name="theme-color" content="#0f172a" />
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="icon" href="icon-192.png">
 
   <style>
     body {
-      font-family: sans-serif;
-      background:#0b0c10;
-      color:#fff;
+      font-family: 'Segoe UI', sans-serif;
+      background:#0f172a;
+      color:#f1f5f9;
       padding:20px;
       margin:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
     }
     h1 {
-      color:#a3e635;
+      color:#22d3ee;
+      margin-bottom:10px;
+    }
+    p {
+      color:#94a3b8;
+      margin-bottom:20px;
+      text-align:center;
+    }
+    .input-area {
+      display:flex;
+      gap:10px;
+      margin-bottom:20px;
+      width:100%;
+      max-width:500px;
+    }
+    input, select {
+      flex:1;
+      padding:10px;
+      border-radius:8px;
+      border:none;
+      outline:none;
+      font-size:14px;
     }
     button {
       padding:10px 20px;
       border-radius:8px;
       border:none;
       cursor:pointer;
-      margin-top: 10px;
+      font-weight:bold;
+      transition:0.2s;
     }
     .primary {
-      background:#a3e635;
-      color:#000;
-      font-weight:bold;
+      background:#22d3ee;
+      color:#0f172a;
+    }
+    .primary:hover {
+      background:#0ea5e9;
     }
     ul {
-      list-style: none;
+      list-style:none;
       padding:0;
-      margin-top:20px;
+      margin-top:10px;
+      width:100%;
+      max-width:500px;
     }
     li {
-      background:#1f2937;
-      margin:5px 0;
-      padding:10px;
-      border-radius:6px;
+      background:#1e293b;
+      margin:8px 0;
+      padding:12px;
+      border-radius:10px;
       display:flex;
       justify-content:space-between;
       align-items:center;
+      box-shadow:0 2px 6px rgba(0,0,0,0.4);
+      transition:0.3s;
     }
     li.packed {
       text-decoration: line-through;
-      opacity: 0.6;
+      opacity:0.6;
     }
-    input {
-      padding:8px;
-      border-radius:6px;
-      border:none;
-      margin-right:10px;
+    .category {
+      font-size:14px;
+      color:#22d3ee;
+      margin-left:8px;
+    }
+    .actions button {
+      margin-left:8px;
+      background:transparent;
+      color:#f87171;
+      font-size:18px;
+    }
+    .progress {
+      margin-top:20px;
+      width:100%;
+      max-width:500px;
+      background:#1e293b;
+      border-radius:10px;
+      overflow:hidden;
+    }
+    .progress-bar {
+      height:10px;
+      background:#22d3ee;
+      width:0%;
+      transition:width 0.4s ease;
     }
   </style>
 </head>
 <body>
   <h1>🎒 Pack My Bag</h1>
-  <p>Plan, pack, and optimize your travel bag with smart suggestions. This app works offline too!</p>
+  <p>Organize your travel essentials by category. Mark items as packed ✅ and track your progress below.</p>
 
-  <!-- Add item input -->
-  <input type="text" id="itemInput" placeholder="Enter item..." />
-  <button class="primary" onclick="addItem()">Add Item</button>
+  <div class="input-area">
+    <input type="text" id="itemInput" placeholder="Enter item (e.g., T-Shirt)" />
+    <select id="categorySelect">
+      <option value="👕 Clothes">👕 Clothes</option>
+      <option value="📱 Gadgets">📱 Gadgets</option>
+      <option value="🧴 Toiletries">🧴 Toiletries</option>
+      <option value="📄 Documents">📄 Documents</option>
+      <option value="🍫 Snacks">🍫 Snacks</option>
+    </select>
+    <button class="primary" onclick="addItem()">Add</button>
+  </div>
 
-  <!-- Packing list -->
   <ul id="packingList"></ul>
 
-  <script>
-    const input = document.getElementById("itemInput");
-    const list = document.getElementById("packingList");
+  <div class="progress">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
 
-    // Load saved list
-    let items = JSON.parse(localStorage.getItem("packingList")) || [];
+<script>
+  const input = document.getElementById("itemInput");
+  const categorySelect = document.getElementById("categorySelect");
+  const list = document.getElementById("packingList");
+  const progressBar = document.getElementById("progressBar");
+
+  let items = JSON.parse(localStorage.getItem("packingList")) || [];
+  renderList();
+
+  function addItem() {
+    const value = input.value.trim();
+    const category = categorySelect.value;
+    if (!value) return;
+    items.push({ text: value, packed: false, category });
+    input.value = "";
+    saveAndRender();
+  }
+
+  function togglePacked(i) {
+    items[i].packed = !items[i].packed;
+    saveAndRender();
+  }
+
+  function removeItem(i) {
+    items.splice(i, 1);
+    saveAndRender();
+  }
+
+  function saveAndRender() {
+    localStorage.setItem("packingList", JSON.stringify(items));
     renderList();
+  }
 
-    function addItem() {
-      const value = input.value.trim();
-      if (value) {
-        items.push({ text: value, packed: false });
-        input.value = "";
-        saveAndRender();
-      }
-    }
+  function renderList() {
+    list.innerHTML = "";
+    items.forEach((item, i) => {
+      const li = document.createElement("li");
+      li.className = item.packed ? "packed" : "";
+      li.innerHTML = \`
+        <span onclick="togglePacked(\${i})">\${item.text} <span class="category">\${item.category}</span></span>
+        <div class="actions">
+          <button onclick="removeItem(\${i})">✖</button>
+        </div>
+      \`;
+      list.appendChild(li);
+    });
+    updateProgress();
+  }
 
-    function togglePacked(index) {
-      items[index].packed = !items[index].packed;
-      saveAndRender();
+  function updateProgress() {
+    if (items.length === 0) {
+      progressBar.style.width = "0%";
+      return;
     }
+    const packedCount = items.filter(item => item.packed).length;
+    const percent = Math.round((packedCount / items.length) * 100);
+    progressBar.style.width = percent + "%";
+  }
 
-    function removeItem(index) {
-      items.splice(index, 1);
-      saveAndRender();
-    }
-
-    function saveAndRender() {
-      localStorage.setItem("packingList", JSON.stringify(items));
-      renderList();
-    }
-
-    function renderList() {
-      list.innerHTML = "";
-      items.forEach((item, i) => {
-        const li = document.createElement("li");
-        li.className = item.packed ? "packed" : "";
-        li.innerHTML = `
-          <span onclick="togglePacked(${i})">${item.text}</span>
-          <button onclick="removeItem(${i})">❌</button>
-        `;
-        list.appendChild(li);
-      });
-    }
-
-    // Register service worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js')
-        .then(() => console.log('Service Worker Registered'))
-        .catch(err => console.error('SW registration failed:', err));
-    }
-  </script>
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log('Service Worker Registered'))
+      .catch(err => console.error('SW registration failed:', err));
+  }
+</script>
 </body>
 </html>
