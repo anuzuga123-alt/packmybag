@@ -4,99 +4,31 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pack My Bag</title>
-  <meta name="description" content="Plan smarter trips: choose your bag, track liters, and build a categorized packing list." />
+  <meta name="description" content="Plan smarter trips: choose your bag, track liters, and build a categorized packing list with photos." />
   <meta name="theme-color" content="#0f172a" />
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="icon" href="icon-192.png">
 
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background:#0f172a;
-      color:#f1f5f9;
-      padding:20px;
-      margin:0;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-    }
-    h1 {
-      color:#22d3ee;
-      margin-bottom:10px;
-    }
-    h2 {
-      color:#38bdf8;
-      margin-top:20px;
-    }
-    p {
-      color:#94a3b8;
-      margin-bottom:15px;
-      text-align:center;
-    }
-    .card {
-      background:#1e293b;
-      padding:15px;
-      border-radius:12px;
-      margin-bottom:20px;
-      width:100%;
-      max-width:500px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.4);
-    }
-    .input-row {
-      display:flex;
-      gap:10px;
-      margin-bottom:10px;
-      flex-wrap:wrap;
-    }
-    input, select {
-      flex:1;
-      padding:10px;
-      border-radius:8px;
-      border:none;
-      outline:none;
-      font-size:14px;
-    }
-    button {
-      padding:10px 20px;
-      border-radius:8px;
-      border:none;
-      cursor:pointer;
-      font-weight:bold;
-      transition:0.2s;
-    }
+    body { font-family:'Segoe UI',sans-serif; background:#0f172a; color:#f1f5f9; padding:20px; margin:0; display:flex; flex-direction:column; align-items:center; }
+    h1 { color:#22d3ee; margin-bottom:10px; }
+    h2 { color:#38bdf8; margin-top:20px; }
+    p { color:#94a3b8; margin-bottom:15px; text-align:center; }
+    .card { background:#1e293b; padding:15px; border-radius:12px; margin-bottom:20px; width:100%; max-width:500px; box-shadow:0 2px 8px rgba(0,0,0,0.4); }
+    .input-row { display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+    input, select { flex:1; padding:10px; border-radius:8px; border:none; outline:none; font-size:14px; }
+    button { padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; transition:0.2s; }
     .primary { background:#22d3ee; color:#0f172a; }
     .primary:hover { background:#0ea5e9; }
-    ul {
-      list-style:none;
-      padding:0;
-      margin-top:10px;
-      width:100%;
-    }
-    li {
-      background:#0f172a;
-      margin:6px 0;
-      padding:10px;
-      border-radius:8px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
+    ul { list-style:none; padding:0; margin-top:10px; width:100%; }
+    li { background:#0f172a; margin:6px 0; padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; }
     li.packed { text-decoration: line-through; opacity:0.6; }
     .category { font-size:13px; color:#22d3ee; margin-left:5px; }
-    .progress {
-      margin-top:10px;
-      background:#1e293b;
-      border-radius:10px;
-      overflow:hidden;
-      height:12px;
-    }
-    .progress-bar {
-      height:100%;
-      background:#22d3ee;
-      width:0%;
-      transition:width 0.4s ease;
-    }
+    .progress { margin-top:10px; background:#1e293b; border-radius:10px; overflow:hidden; height:12px; }
+    .progress-bar { height:100%; background:#22d3ee; width:0%; transition:width 0.4s ease; }
+    .item-left { display:flex; align-items:center; gap:10px; }
+    .thumb { width:40px; height:40px; object-fit:cover; border-radius:6px; }
   </style>
 </head>
 <body>
@@ -131,6 +63,7 @@
         <option value="📄 Documents">📄 Documents</option>
         <option value="🍫 Snacks">🍫 Snacks</option>
       </select>
+      <input type="file" id="photoInput" accept="image/*" capture="environment">
       <button class="primary" onclick="addItem()">Add</button>
     </div>
     <ul id="packingList"></ul>
@@ -142,12 +75,12 @@
   const input = document.getElementById("itemInput");
   const qtyInput = document.getElementById("qtyInput");
   const categorySelect = document.getElementById("categorySelect");
+  const photoInput = document.getElementById("photoInput");
   const list = document.getElementById("packingList");
   const progressBar = document.getElementById("progressBar");
   const progressText = document.getElementById("progressText");
   const bagCapacityInput = document.getElementById("bagCapacity");
 
-  // Load data
   let items = JSON.parse(localStorage.getItem("packingList")) || [];
   let bagType = localStorage.getItem("bagType") || "Backpack";
   let bagCapacity = parseInt(localStorage.getItem("bagCapacity")) || 40;
@@ -157,7 +90,6 @@
 
   renderList();
 
-  // Bag type & capacity changes
   document.getElementById("bagType").addEventListener("change", e => {
     bagType = e.target.value;
     localStorage.setItem("bagType", bagType);
@@ -172,11 +104,25 @@
     const value = input.value.trim();
     const qty = parseInt(qtyInput.value) || 1;
     const category = categorySelect.value;
+
     if (!value) return;
-    items.push({ text: value, qty, packed: false, category });
+
+    if (photoInput.files && photoInput.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const photo = e.target.result;
+        items.push({ text:value, qty, packed:false, category, photo });
+        saveAndRender();
+      }
+      reader.readAsDataURL(photoInput.files[0]);
+    } else {
+      items.push({ text:value, qty, packed:false, category, photo:null });
+      saveAndRender();
+    }
+
     input.value = "";
     qtyInput.value = 1;
-    saveAndRender();
+    photoInput.value = "";
   }
 
   function togglePacked(i) {
@@ -185,7 +131,7 @@
   }
 
   function removeItem(i) {
-    items.splice(i, 1);
+    items.splice(i,1);
     saveAndRender();
   }
 
@@ -196,13 +142,16 @@
 
   function renderList() {
     list.innerHTML = "";
-    items.forEach((item, i) => {
+    items.forEach((item,i) => {
       const li = document.createElement("li");
       li.className = item.packed ? "packed" : "";
-      li.innerHTML = \`
-        <span onclick="togglePacked(\${i})">\${item.qty} × \${item.text} <span class="category">\${item.category}</span></span>
-        <button onclick="removeItem(\${i})">❌</button>
-      \`;
+      li.innerHTML = `
+        <div class="item-left" onclick="togglePacked(${i})">
+          ${item.photo ? `<img src="${item.photo}" class="thumb">` : ""}
+          <span>${item.qty} × ${item.text} <span class="category">${item.category}</span></span>
+        </div>
+        <button onclick="removeItem(${i})">❌</button>
+      `;
       list.appendChild(li);
     });
     updateProgress();
@@ -214,18 +163,18 @@
       progressText.textContent = "No items yet.";
       return;
     }
-    // assume each item = 2L × qty
-    const litersUsed = items.reduce((sum, i) => sum + (i.qty * 2), 0);
-    const percent = Math.min(100, Math.round((litersUsed / bagCapacity) * 100));
-    progressBar.style.width = percent + "%";
-    progressText.textContent = \`\${litersUsed}L of \${bagCapacity}L used (\${percent}%)\`;
+    const litersUsed = items.reduce((sum,i)=>sum+(i.qty*2),0);
+    const percent = Math.min(100, Math.round((litersUsed/bagCapacity)*100));
+    progressBar.style.width = percent+"%";
+    progressText.textContent = `${litersUsed}L of ${bagCapacity}L used (${percent}%)`;
   }
 
-  // Register service worker (force update with version bump)
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js?version=3')
-      .then(() => console.log('Service Worker Registered'))
-      .catch(err => console.error('SW registration failed:', err));
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => {
+        if (reg.waiting) reg.waiting.postMessage({action:'skipWaiting'});
+      })
+      .catch(err => console.error('SW registration failed:',err));
   }
 </script>
 </body>
