@@ -3,178 +3,241 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pack My Bag</title>
-  <meta name="description" content="Plan smarter trips: choose your bag, track liters, and build a categorized packing list with photos." />
+  <title>Pack My Bag – Travel Organizer</title>
   <meta name="theme-color" content="#0f172a" />
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.png">
-  <link rel="icon" href="icon-192.png">
-
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" />
   <style>
-    body { font-family:'Segoe UI',sans-serif; background:#0f172a; color:#f1f5f9; padding:20px; margin:0; display:flex; flex-direction:column; align-items:center; }
-    h1 { color:#22d3ee; margin-bottom:10px; }
-    h2 { color:#38bdf8; margin-top:20px; }
-    p { color:#94a3b8; margin-bottom:15px; text-align:center; }
-    .card { background:#1e293b; padding:15px; border-radius:12px; margin-bottom:20px; width:100%; max-width:500px; box-shadow:0 2px 8px rgba(0,0,0,0.4); }
-    .input-row { display:flex; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
-    input, select { flex:1; padding:10px; border-radius:8px; border:none; outline:none; font-size:14px; }
-    button { padding:10px 20px; border-radius:8px; border:none; cursor:pointer; font-weight:bold; transition:0.2s; }
+    body { font-family:'Segoe UI',sans-serif; background:#0f172a; color:#f1f5f9; margin:0; padding:0; display:flex; flex-direction:column; align-items:center; }
+    header { width:100%; background:#1e293b; padding:12px; text-align:center; color:#22d3ee; font-size:20px; font-weight:bold; }
+    .container { width:100%; max-width:700px; padding:20px; }
+    .card { background:#1e293b; border-radius:12px; padding:15px; margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,0.4); }
+    h2 { color:#38bdf8; margin-top:0; }
+    p { color:#94a3b8; margin:8px 0; }
+    .profile-card { background:#0f172a; padding:12px; margin:8px 0; border-radius:10px; cursor:pointer; transition:0.2s; }
+    .profile-card:hover { background:#0ea5e9; color:#0f172a; }
+    .input-row { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px; }
+    input, select { flex:1; padding:10px; border-radius:8px; border:none; font-size:14px; }
+    button { padding:10px 18px; border:none; border-radius:8px; cursor:pointer; font-weight:bold; }
     .primary { background:#22d3ee; color:#0f172a; }
     .primary:hover { background:#0ea5e9; }
-    ul { list-style:none; padding:0; margin-top:10px; width:100%; }
-    li { background:#0f172a; margin:6px 0; padding:10px; border-radius:8px; display:flex; justify-content:space-between; align-items:center; }
-    li.packed { text-decoration: line-through; opacity:0.6; }
-    .category { font-size:13px; color:#22d3ee; margin-left:5px; }
-    .progress { margin-top:10px; background:#1e293b; border-radius:10px; overflow:hidden; height:12px; }
-    .progress-bar { height:100%; background:#22d3ee; width:0%; transition:width 0.4s ease; }
+    ul { list-style:none; padding:0; margin-top:10px; }
+    li { background:#0f172a; padding:10px; border-radius:8px; margin:6px 0; display:flex; justify-content:space-between; align-items:center; }
+    li.packed { text-decoration:line-through; opacity:0.6; }
     .item-left { display:flex; align-items:center; gap:10px; }
     .thumb { width:40px; height:40px; object-fit:cover; border-radius:6px; }
+    .progress { margin-top:10px; background:#1e293b; border-radius:10px; overflow:hidden; height:12px; }
+    .progress-bar { height:100%; background:#22d3ee; width:0%; transition:width 0.4s ease; }
+    .tabs { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+    .tab { background:#0f172a; padding:6px 12px; border-radius:6px; cursor:pointer; }
+    .tab.active { background:#22d3ee; color:#0f172a; }
+    .gallery { display:grid; grid-template-columns:repeat(auto-fill,minmax(80px,1fr)); gap:10px; }
+    .gallery img { width:100%; border-radius:8px; object-fit:cover; }
   </style>
 </head>
 <body>
-  <h1>🎒 Pack My Bag</h1>
+<header>🎒 Pack My Bag</header>
+<div class="container">
 
-  <!-- Bag Setup -->
-  <div class="card">
-    <h2>Bag Setup</h2>
-    <p>Select your bag type and capacity.</p>
-    <div class="input-row">
-      <select id="bagType">
-        <option value="Backpack">🎒 Backpack</option>
-        <option value="Suitcase">🧳 Suitcase</option>
-        <option value="Duffel">👜 Duffel Bag</option>
-      </select>
-      <input type="number" id="bagCapacity" placeholder="Liters (e.g. 40)" />
-    </div>
+  <!-- Profile Selector -->
+  <div id="profileSelector" class="card">
+    <h2>👤 Select Person / Trip</h2>
+    <div id="profileList"></div>
+    <button class="primary" onclick="createProfile()">➕ Add New Profile</button>
   </div>
 
-  <!-- Packing List -->
-  <div class="card">
-    <h2>Packing List</h2>
-    <div class="input-row">
-      <input type="text" id="itemInput" placeholder="Enter item (e.g., T-Shirt)" />
-      <input type="number" id="qtyInput" placeholder="Qty" min="1" value="1" />
+  <!-- Main App -->
+  <div id="mainApp" style="display:none;">
+    <div class="card">
+      <h2 id="profileTitle"></h2>
+      <p><strong>Bag:</strong> <span id="bagInfo"></span></p>
+      <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+      <p id="progressText"></p>
     </div>
-    <div class="input-row">
-      <select id="categorySelect">
-        <option value="👕 Clothes">👕 Clothes</option>
-        <option value="📱 Gadgets">📱 Gadgets</option>
-        <option value="🧴 Toiletries">🧴 Toiletries</option>
-        <option value="📄 Documents">📄 Documents</option>
-        <option value="🍫 Snacks">🍫 Snacks</option>
-      </select>
-      <input type="file" id="photoInput" accept="image/*" capture="environment">
-      <button class="primary" onclick="addItem()">Add</button>
+
+    <div class="card">
+      <h2>Add Item</h2>
+      <div class="input-row">
+        <input type="text" id="itemInput" placeholder="Item name" />
+        <input type="number" id="qtyInput" placeholder="Qty" min="1" value="1" />
+      </div>
+      <div class="input-row">
+        <select id="compartmentSelect">
+          <option value="Clothes">👕 Clothes</option>
+          <option value="Accessories">⌚ Accessories</option>
+          <option value="Electronics">📱 Electronics</option>
+          <option value="Skincare">🧴 Skincare</option>
+          <option value="Toiletries">🪥 Toiletries</option>
+          <option value="Travel Essentials">🌍 Travel Essentials</option>
+        </select>
+        <input type="file" id="photoInput" accept="image/*" capture="environment" />
+        <button class="primary" onclick="addItem()">Add</button>
+      </div>
     </div>
-    <ul id="packingList"></ul>
-    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
-    <p id="progressText"></p>
+
+    <div class="tabs" id="compartmentTabs"></div>
+
+    <div id="checklistView" class="card">
+      <h2>Checklist</h2>
+      <ul id="packingList"></ul>
+    </div>
+
+    <div id="galleryView" class="card">
+      <h2>Gallery</h2>
+      <div class="gallery" id="galleryGrid"></div>
+    </div>
+
+    <button onclick="backToProfiles()">⬅ Back to Profiles</button>
   </div>
+</div>
 
 <script>
-  const input = document.getElementById("itemInput");
-  const qtyInput = document.getElementById("qtyInput");
-  const categorySelect = document.getElementById("categorySelect");
-  const photoInput = document.getElementById("photoInput");
-  const list = document.getElementById("packingList");
-  const progressBar = document.getElementById("progressBar");
-  const progressText = document.getElementById("progressText");
-  const bagCapacityInput = document.getElementById("bagCapacity");
+  // Data
+  let profiles = JSON.parse(localStorage.getItem("profiles")) || [];
+  let activeProfileId = null;
+  let activeCompartment = "Clothes";
 
-  let items = JSON.parse(localStorage.getItem("packingList")) || [];
-  let bagType = localStorage.getItem("bagType") || "Backpack";
-  let bagCapacity = parseInt(localStorage.getItem("bagCapacity")) || 40;
-
-  document.getElementById("bagType").value = bagType;
-  bagCapacityInput.value = bagCapacity;
-
-  renderList();
-
-  document.getElementById("bagType").addEventListener("change", e => {
-    bagType = e.target.value;
-    localStorage.setItem("bagType", bagType);
-  });
-  bagCapacityInput.addEventListener("input", e => {
-    bagCapacity = parseInt(e.target.value) || 0;
-    localStorage.setItem("bagCapacity", bagCapacity);
-    updateProgress();
-  });
-
-  function addItem() {
-    const value = input.value.trim();
-    const qty = parseInt(qtyInput.value) || 1;
-    const category = categorySelect.value;
-
-    if (!value) return;
-
-    if (photoInput.files && photoInput.files[0]) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const photo = e.target.result;
-        items.push({ text:value, qty, packed:false, category, photo });
-        saveAndRender();
-      }
-      reader.readAsDataURL(photoInput.files[0]);
-    } else {
-      items.push({ text:value, qty, packed:false, category, photo:null });
-      saveAndRender();
-    }
-
-    input.value = "";
-    qtyInput.value = 1;
-    photoInput.value = "";
+  // Profile management
+  function renderProfiles() {
+    const list = document.getElementById("profileList");
+    list.innerHTML = "";
+    profiles.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "profile-card";
+      div.innerHTML = `<h3>${p.name}</h3><p>${p.trip}</p>`;
+      div.onclick = () => openProfile(p.id);
+      list.appendChild(div);
+    });
   }
 
-  function togglePacked(i) {
-    items[i].packed = !items[i].packed;
-    saveAndRender();
+  function createProfile() {
+    const name = prompt("Enter person name or trip name:");
+    if (!name) return;
+    const trip = prompt("Enter trip/location (optional):") || "";
+    const bagType = prompt("Bag type (Backpack, Suitcase...):") || "Backpack";
+    const bagCapacity = parseInt(prompt("Bag capacity in liters:")) || 40;
+    const id = Date.now();
+    profiles.push({id,name,trip,bagType,bagCapacity,items:[]});
+    saveProfiles();
+    renderProfiles();
   }
 
-  function removeItem(i) {
-    items.splice(i,1);
-    saveAndRender();
-  }
-
-  function saveAndRender() {
-    localStorage.setItem("packingList", JSON.stringify(items));
+  function openProfile(id) {
+    activeProfileId = id;
+    const p = profiles.find(x=>x.id===id);
+    document.getElementById("profileSelector").style.display="none";
+    document.getElementById("mainApp").style.display="block";
+    document.getElementById("profileTitle").textContent = `${p.name} – ${p.trip}`;
+    document.getElementById("bagInfo").textContent = `${p.bagType}, ${p.bagCapacity}L`;
+    renderTabs();
     renderList();
   }
 
-  function renderList() {
-    list.innerHTML = "";
-    items.forEach((item,i) => {
-      const li = document.createElement("li");
-      li.className = item.packed ? "packed" : "";
-      li.innerHTML = `
-        <div class="item-left" onclick="togglePacked(${i})">
-          ${item.photo ? `<img src="${item.photo}" class="thumb">` : ""}
-          <span>${item.qty} × ${item.text} <span class="category">${item.category}</span></span>
+  function backToProfiles() {
+    activeProfileId=null;
+    document.getElementById("profileSelector").style.display="block";
+    document.getElementById("mainApp").style.display="none";
+  }
+
+  function saveProfiles() {
+    localStorage.setItem("profiles", JSON.stringify(profiles));
+  }
+
+  // Items
+  function addItem() {
+    const input = document.getElementById("itemInput");
+    const qtyInput = document.getElementById("qtyInput");
+    const photoInput = document.getElementById("photoInput");
+    const profile = profiles.find(x=>x.id===activeProfileId);
+    const text = input.value.trim();
+    const qty = parseInt(qtyInput.value)||1;
+    if(!text) return;
+
+    const add = (photo) => {
+      profile.items.push({text,qty,compartment:activeCompartment,packed:false,photo});
+      saveProfiles();
+      renderList();
+    };
+
+    if(photoInput.files && photoInput.files[0]){
+      const reader = new FileReader();
+      reader.onload = e => add(e.target.result);
+      reader.readAsDataURL(photoInput.files[0]);
+    } else {
+      add(null);
+    }
+    input.value=""; qtyInput.value=1; photoInput.value="";
+  }
+
+  function togglePacked(idx){
+    const p=profiles.find(x=>x.id===activeProfileId);
+    p.items[idx].packed=!p.items[idx].packed;
+    saveProfiles(); renderList();
+  }
+
+  function removeItem(idx){
+    const p=profiles.find(x=>x.id===activeProfileId);
+    p.items.splice(idx,1);
+    saveProfiles(); renderList();
+  }
+
+  function renderTabs(){
+    const tabs=document.getElementById("compartmentTabs");
+    const compartments=["Clothes","Accessories","Electronics","Skincare","Toiletries","Travel Essentials"];
+    tabs.innerHTML="";
+    compartments.forEach(c=>{
+      const div=document.createElement("div");
+      div.className="tab"+(c===activeCompartment?" active":"");
+      div.textContent=c;
+      div.onclick=()=>{activeCompartment=c; renderTabs(); renderList();}
+      tabs.appendChild(div);
+    });
+  }
+
+  function renderList(){
+    const p=profiles.find(x=>x.id===activeProfileId);
+    const list=document.getElementById("packingList");
+    list.innerHTML="";
+    const filtered=p.items.filter(i=>i.compartment===activeCompartment);
+    filtered.forEach((item,idx)=>{
+      const li=document.createElement("li");
+      li.className=item.packed?"packed":"";
+      li.innerHTML=`
+        <div class="item-left" onclick="togglePacked(${p.items.indexOf(item)})">
+          ${item.photo?`<img src="${item.photo}" class="thumb">`:""}
+          <span>${item.qty} × ${item.text}</span>
         </div>
-        <button onclick="removeItem(${i})">❌</button>
-      `;
+        <button onclick="removeItem(${p.items.indexOf(item)})">❌</button>`;
       list.appendChild(li);
     });
-    updateProgress();
+
+    // Gallery
+    const gallery=document.getElementById("galleryGrid");
+    gallery.innerHTML="";
+    p.items.forEach(item=>{
+      if(item.photo){
+        const img=document.createElement("img");
+        img.src=item.photo;
+        gallery.appendChild(img);
+      }
+    });
+
+    // Progress
+    updateProgress(p);
   }
 
-  function updateProgress() {
-    if (!bagCapacity || items.length === 0) {
-      progressBar.style.width = "0%";
-      progressText.textContent = "No items yet.";
-      return;
-    }
-    const litersUsed = items.reduce((sum,i)=>sum+(i.qty*2),0);
-    const percent = Math.min(100, Math.round((litersUsed/bagCapacity)*100));
-    progressBar.style.width = percent+"%";
-    progressText.textContent = `${litersUsed}L of ${bagCapacity}L used (${percent}%)`;
+  function updateProgress(profile){
+    const used=profile.items.reduce((sum,i)=>sum+(i.qty*2),0);
+    const percent=Math.min(100,Math.round((used/profile.bagCapacity)*100));
+    document.getElementById("progressBar").style.width=percent+"%";
+    document.getElementById("progressText").textContent=`${used}L of ${profile.bagCapacity}L used (${percent}%)`;
   }
 
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => {
-        if (reg.waiting) reg.waiting.postMessage({action:'skipWaiting'});
-      })
-      .catch(err => console.error('SW registration failed:',err));
+  // Init
+  renderProfiles();
+
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js');
   }
 </script>
 </body>
