@@ -1,430 +1,270 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Your Packing Friend</title>
-  <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#0ea5a4" />
-  <link rel="icon" href="./icon-192.png">
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pack My Bag – Travel Assistant</title>
+  <link rel="manifest" href="./manifest.json"/>
+  <meta name="theme-color" content="#2196f3"/>
   <style>
-    /* --- Colorful, mobile-first travel UI --- */
-    :root{
-      --bg:#f6fbff; --card:#ffffff; --muted:#6b7280; --brand1:#06b6d4; --brand2:#0ea5a4;
-      --accent:#fb7185; --glass: rgba(255,255,255,0.6);
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #6dd5fa, #2980b9);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
-    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:
-      linear-gradient(180deg,#e6fffa 0%, #f6fbff 100%); color:#04263b;}
-    header{padding:14px 16px; text-align:center; background:linear-gradient(90deg,var(--brand1),var(--brand2)); color:white; font-weight:700;}
-    .wrap{max-width:760px;margin:12px auto;padding:12px}
-    .card{background:var(--card);border-radius:12px;padding:12px;margin-bottom:12px;box-shadow:0 10px 30px rgba(6,22,33,0.06);}
-    h1{margin:0;font-size:18px}
-    h2{margin:0 0 8px 0;color:var(--brand2)}
-    .muted{color:var(--muted);font-size:13px}
-    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-    input,select,button,textarea{font-size:15px}
-    input,select,textarea{padding:10px;border-radius:10px;border:1px solid #e6eef2;background:#fff;flex:1}
-    button{padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
-    .btn-primary{background:linear-gradient(90deg,var(--brand1),var(--brand2));color:#fff;font-weight:600}
-    .btn-ghost{background:transparent;border:1px solid #e6eef2;color:#04263b}
-    .profile-card{display:flex;justify-content:space-between;align-items:center;padding:10px;border-radius:10px;margin-bottom:8px;background:
-      linear-gradient(180deg, rgba(14,165,164,0.06), rgba(6,182,212,0.03));}
-    .profile-left{display:flex;flex-direction:column}
-    .profile-meta{font-size:13px;color:var(--muted)}
-    .danger{background:#ef4444;color:#fff}
-    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px 0}
-    .tab{padding:8px 12px;border-radius:999px;background:#f1f5f9;color:#0f1724; cursor:pointer;border:1px solid rgba(2,6,23,0.04)}
-    .tab.active{background:linear-gradient(90deg,var(--brand1),var(--brand2));color:#fff}
-    ul{list-style:none;padding:0;margin:6px 0}
-    li{display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:10px;background:#fbfeff;margin-bottom:8px}
-    .left{display:flex;gap:10px;align-items:center}
-    .thumb{width:56px;height:56px;object-fit:cover;border-radius:8px;background:#f1f5f9}
-    .title{font-weight:600}
-    .sub{font-size:13px;color:var(--muted)}
-    .fab{position:fixed;right:16px;bottom:18px;width:64px;height:64px;border-radius:50%;background:linear-gradient(90deg,var(--brand2),var(--brand1));color:white;border:0;font-size:30px;box-shadow:0 12px 32px rgba(6,22,33,0.12)}
-    .dialog-backdrop{position:fixed;inset:0;background:rgba(4,6,8,0.45);display:none;align-items:center;justify-content:center;padding:16px}
-    .dialog{width:100%;max-width:420px;background:var(--card);border-radius:12px;padding:12px}
-    .category-badge{display:inline-block;padding:6px 8px;border-radius:999px;font-size:13px;background:linear-gradient(90deg,#e6f9ff,#fff2f7); color:#063b3a}
-    .accordion{border-radius:10px;overflow:hidden;border:1px solid #eef2f6}
-    .accordion-item{border-top:1px solid #eef2f6;padding:8px 10px;background:#fff;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
-    .accordion-item:first-child{border-top:0}
-    .count{background:#eef2f6;padding:6px 8px;border-radius:999px;font-size:13px;color:#0b1724}
-    .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
-    .gallery-grid img{width:100%;height:90px;object-fit:cover;border-radius:8px}
-    @media (max-width:520px){ .thumb{width:48px;height:48px} .fab{width:56px;height:56px} }
+    header {
+      text-align: center;
+      padding: 1rem;
+      background: rgba(0,0,0,0.2);
+    }
+    h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    main {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+    .trip-card {
+      background: #fff;
+      color: #333;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      transition: transform .2s;
+    }
+    .trip-card:hover { transform: scale(1.02); }
+    .btn {
+      padding: .6rem 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      margin: .2rem;
+    }
+    .btn-primary { background: linear-gradient(45deg, #00c6ff, #0072ff); color: white; }
+    .btn-danger { background: crimson; color: white; }
+    .btn-secondary { background: #eee; color: #333; }
+    .progress-bar {
+      background: #eee;
+      border-radius: 6px;
+      overflow: hidden;
+      margin: .3rem 0;
+    }
+    .progress {
+      height: 8px;
+      background: linear-gradient(90deg, #00c6ff, #0072ff);
+    }
+    .category {
+      margin-top: .5rem;
+      background: #f4f4f4;
+      padding: .5rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .category h4 { margin: 0; font-size: 1rem; color: #0072ff; }
+    .items { display: none; padding-top: .4rem; }
+    .item {
+      display: flex; align-items: center; justify-content: space-between;
+      margin: .3rem 0;
+      background: #fff;
+      border-radius: 6px;
+      padding: .3rem .6rem;
+      color: #333;
+    }
+    .item img { width: 32px; height: 32px; border-radius: 4px; margin-right: .5rem; }
+    .gallery { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; }
+    .gallery img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+    #tripForm {
+      display: flex; flex-direction: column; gap: .5rem;
+      background: rgba(255,255,255,0.2);
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+    }
+    input, select {
+      padding: .5rem; border-radius: 6px; border: none;
+    }
+    footer {
+      background: rgba(0,0,0,0.2);
+      padding: .6rem;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
-  <header>Your Packing Friend — Travel PWA</header>
-  <div class="wrap">
+  <header>
+    <h1>✈️ Pack My Bag – Travel Assistant</h1>
+    <p>Your smart packing companion</p>
+  </header>
 
-    <!-- Install prompt card -->
-    <div id="installCard" class="card" style="display:none">
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <div>
-          <h2 style="margin:0">Install the App</h2>
-          <div class="muted">Add to home screen for quick access — works offline.</div>
-        </div>
-        <div>
-          <button id="installBtn" class="btn-primary">Install</button>
-        </div>
-      </div>
-    </div>
+  <main>
+    <form id="tripForm">
+      <input type="text" id="tripName" placeholder="Trip Name (e.g. Goa)" required/>
+      <input type="date" id="tripDate" required/>
+      <select id="tripType">
+        <option value="casual">Casual</option>
+        <option value="beach">Beach</option>
+        <option value="business">Business</option>
+        <option value="trek">Trek</option>
+      </select>
+      <button type="submit" class="btn btn-primary">➕ Add Trip</button>
+    </form>
+    <div id="trips"></div>
+  </main>
 
-    <!-- Profiles: create & list -->
-    <div id="profilesBlock" class="card">
-      <h2>Trips & People</h2>
-      <div class="muted">Create a profile for each traveler or trip (tap to open).</div>
+  <footer>
+    <button id="installBtn" class="btn btn-secondary">📲 Install Travel Assistant</button>
+  </footer>
 
-      <div style="margin-top:10px" class="row">
-        <input id="p_name" placeholder="Name (person or trip)" />
-        <input id="p_date" type="date" style="max-width:160px" />
-      </div>
+  <script>
+    let trips = JSON.parse(localStorage.getItem("trips") || "[]");
+    const tripsDiv = document.getElementById("trips");
 
-      <div style="margin-top:8px" class="row">
-        <select id="p_bagtype" style="max-width:160px">
-          <option>Backpack</option><option>Suitcase</option><option>Duffel</option>
-        </select>
-        <input id="p_capacity" type="number" placeholder="Capacity (L)" style="max-width:120px" />
-        <button id="createProfile" class="btn-primary">Create</button>
-      </div>
-
-      <div id="profilesList" style="margin-top:12px"></div>
-    </div>
-
-    <!-- Main app (per profile) -->
-    <div id="appBlock" style="display:none">
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <h2 id="profileTitle"></h2>
-            <div class="muted" id="profileMeta"></div>
-          </div>
-          <div>
-            <button id="backToProfiles" class="btn-ghost">Back</button>
-            <button id="deleteProfile" class="danger">Delete</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <strong>Bag</strong>
-            <div class="muted" id="bagInfo"></div>
-          </div>
-          <div style="text-align:right">
-            <div class="muted" id="usageText"></div>
-          </div>
-        </div>
-
-        <div style="margin-top:10px">
-          <div style="height:12px;background:#eff6ff;border-radius:10px;overflow:hidden">
-            <div id="progressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--brand2),var(--brand1))"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <h2>Items</h2>
-          <div class="muted">Tap a category to filter, or use Add to add an item.</div>
-        </div>
-
-        <div id="categoryAccordion" class="accordion" style="margin-top:8px"></div>
-
-        <div style="margin-top:12px">
-          <div class="tabbar" id="viewTabs">
-            <div class="tab active" data-view="check">Checklist</div>
-            <div class="tab" data-view="gallery">Gallery</div>
-          </div>
-
-          <div id="checklistArea">
-            <ul id="itemsList"></ul>
-          </div>
-
-          <div id="galleryArea" style="display:none">
-            <div class="gallery-grid" id="galleryGrid"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- floating add -->
-  <button class="fab" id="openAdd">＋</button>
-
-  <!-- add dialog -->
-  <div class="dialog-backdrop" id="dialog">
-    <div class="dialog">
-      <h3 style="margin:0 0 8px 0">Add Item</h3>
-      <div style="margin-bottom:8px"><input id="ai_name" placeholder="Item name (e.g., T-shirt)" /></div>
-      <div class="row" style="margin-bottom:8px">
-        <input id="ai_qty" type="number" value="1" style="max-width:120px" />
-        <select id="ai_cat">
-          <option>Clothes</option><option>Accessories</option><option>Electronics</option>
-          <option>Skincare</option><option>Toiletries</option><option>Travel Essentials</option>
-        </select>
-      </div>
-      <div style="margin-bottom:8px">
-        <input id="ai_photo" type="file" accept="image/*" capture="environment" />
-        <div class="muted" style="font-size:13px;margin-top:6px">Use camera or choose from gallery.</div>
-      </div>
-      <div style="display:flex;justify-content:flex-end;gap:8px">
-        <button id="ai_cancel" class="btn-ghost">Cancel</button>
-        <button id="ai_add" class="btn-primary">Add Item</button>
-      </div>
-    </div>
-  </div>
-
-<script>
-/* ---------------- Storage model & helpers ---------------- */
-const STORAGE_KEY = 'ypf_profiles_v1';
-const categories = ['Clothes','Accessories','Electronics','Skincare','Toiletries','Travel Essentials'];
-let profiles = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
-let activeId = null;
-let activeCategory = null; // null means all
-let pendingInstallPrompt = null;
-
-/* ---------- Install prompt handling ---------- */
-window.addEventListener('beforeinstallprompt', e=>{
-  e.preventDefault();
-  pendingInstallPrompt = e;
-  document.getElementById('installCard').style.display='block';
-});
-document.getElementById('installBtn').addEventListener('click', async ()=>{
-  if(!pendingInstallPrompt) return;
-  pendingInstallPrompt.prompt();
-  await pendingInstallPrompt.userChoice;
-  pendingInstallPrompt = null;
-  document.getElementById('installCard').style.display='none';
-});
-
-/* ---------- UI bindings ---------- */
-function $(id){ return document.getElementById(id); }
-
-function saveProfiles(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(profiles)); }
-
-/* ---------- Profile list rendering ---------- */
-function renderProfileList(){
-  const el = $('profilesList'); el.innerHTML='';
-  if(!profiles.length) el.innerHTML = '<div class="muted">No profiles yet. Create one — for yourself or for someone else.</div>';
-  profiles.forEach(p=>{
-    const div = document.createElement('div'); div.className='profile-card';
-    div.innerHTML = `<div class="profile-left">
-        <div style="font-weight:700">${escapeHtml(p.name)}</div>
-        <div class="profile-meta">${p.date?escapeHtml(p.date)+' • ':''}${escapeHtml(p.bagType)} • ${p.bagCapacity}L</div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="btn-ghost" data-open="${p.id}">Open</button>
-        <button data-delete="${p.id}" class="danger">Delete</button>
-      </div>`;
-    el.appendChild(div);
-  });
-  // events
-  el.querySelectorAll('[data-open]').forEach(btn=>btn.addEventListener('click', e=>{
-    const id = e.currentTarget.dataset.open; openProfile(id);
-  }));
-  el.querySelectorAll('[data-delete]').forEach(btn=>btn.addEventListener('click', e=>{
-    const id = e.currentTarget.dataset.delete;
-    if(confirm('Delete this profile and all items?')){ profiles = profiles.filter(px=>px.id!==id); saveProfiles(); renderProfileList(); }
-  }));
-}
-
-/* ---------- Create profile ---------- */
-$('createProfile').addEventListener('click', ()=>{
-  const name = $('p_name').value.trim(); if(!name){ alert('Enter a name'); return; }
-  const date = $('p_date').value || '';
-  const bagType = $('p_bagtype').value || 'Backpack';
-  const bagCapacity = parseInt($('p_capacity').value) || 40;
-  const id = 'p_' + Date.now().toString(36);
-  profiles.push({ id, name, date, bagType, bagCapacity, items: [] });
-  saveProfiles(); renderProfileList();
-  $('p_name').value=''; $('p_date').value=''; $('p_capacity').value='';
-});
-
-/* ---------- Open profile ---------- */
-$('backToProfiles').addEventListener('click', ()=>{
-  activeId = null; $('appBlock').style.display='none'; $('profilesBlock').style.display='block';
-});
-function openProfile(id){
-  activeId = id;
-  const p = profiles.find(x=>x.id===id); if(!p) return;
-  $('profilesBlock').style.display='none'; $('appBlock').style.display='block';
-  $('profileTitle').textContent = p.name;
-  $('profileMeta').textContent = (p.date?('Trip: '+p.date+' • '):'') + p.bagType + ' • ' + p.bagCapacity + 'L';
-  $('bagInfo').textContent = `${p.bagType} • ${p.bagCapacity}L`;
-  renderAccordion(); renderViewTabs(); renderList();
-}
-
-/* delete profile */
-$('deleteProfile').addEventListener('click', ()=>{
-  if(!activeId) return;
-  if(!confirm('Delete this profile and all its items?')) return;
-  profiles = profiles.filter(p=>p.id!==activeId); saveProfiles(); renderProfileList(); $('appBlock').style.display='none'; $('profilesBlock').style.display='block';
-});
-
-/* ---------- Categories accordion ---------- */
-function renderAccordion(){
-  const el = $('categoryAccordion'); el.innerHTML='';
-  const p = profiles.find(x=>x.id===activeId); if(!p) return;
-  categories.concat(['All']).forEach(cat=>{
-    const count = cat==='All'? p.items.length : p.items.filter(it=>it.compartment===cat).length;
-    const row = document.createElement('div'); row.className='accordion-item';
-    row.innerHTML = `<div style="display:flex;gap:10px;align-items:center">
-        <div class="category-badge">${cat}</div>
-        <div class="muted" style="font-size:13px">${cat==='All' ? 'All items' : 'Items in ' + cat}</div>
-      </div>
-      <div class="count">${count}</div>`;
-    row.addEventListener('click', ()=>{ activeCategory = (activeCategory===cat? null: cat); renderAccordion(); renderList(); });
-    if(activeCategory===cat){ row.style.background='#f0fdfa'; row.querySelector('.category-badge').style.background='linear-gradient(90deg,var(--brand1),var(--brand2))'; row.querySelector('.category-badge').style.color='#fff'; }
-    el.appendChild(row);
-  });
-}
-
-/* ---------- view tabs ---------- */
-function renderViewTabs(){
-  document.querySelectorAll('#viewTabs .tab').forEach(t=>t.addEventListener('click', ()=>{
-    document.querySelectorAll('#viewTabs .tab').forEach(x=>x.classList.remove('active'));
-    t.classList.add('active');
-    const view = t.dataset.view;
-    $('checklistArea').style.display = view==='check' ? '' : 'none';
-    $('galleryArea').style.display = view==='gallery' ? '' : 'none';
-  }));
-}
-
-/* ---------- Add item dialog and flow ---------- */
-const dialog = $('dialog');
-$('openAdd').addEventListener('click', ()=>{
-  if(!activeId){ alert('Open a profile first'); return; }
-  $('ai_name').value=''; $('ai_qty').value=1; $('ai_photo').value=''; $('ai_cat').value = activeCategory || 'Clothes';
-  dialog.style.display='flex';
-});
-$('ai_cancel').addEventListener('click', ()=> dialog.style.display='none');
-
-$('ai_add').addEventListener('click', async ()=>{
-  const name = $('ai_name').value.trim(); if(!name){ alert('Enter item name'); return; }
-  const qty = parseInt($('ai_qty').value) || 1;
-  const compartment = $('ai_cat').value || 'Clothes';
-  const file = $('ai_photo').files && $('ai_photo').files[0];
-  let photoData = null;
-  if(file){
-    try{ const dataUrl = await readFileAsDataURL(file); photoData = await resizeImage(dataUrl, 900, 900, 0.75); } catch(e){ console.warn(e); }
-  }
-  const p = profiles.find(x=>x.id===activeId);
-  const item = { id:'i_'+Date.now().toString(36), text:name, qty, compartment, packed:false, photo: photoData };
-  p.items.push(item); saveProfiles(); renderList(); dialog.style.display='none';
-});
-
-/* read file -> data URL */
-function readFileAsDataURL(file){
-  return new Promise((res, rej)=>{
-    const r = new FileReader();
-    r.onload = ()=>res(r.result); r.onerror = (e)=>rej(e);
-    r.readAsDataURL(file);
-  });
-}
-
-/* resize image to reduce localStorage usage */
-function resizeImage(dataUrl, maxW, maxH, q=0.8){
-  return new Promise(res=>{
-    const img = new Image();
-    img.onload = ()=>{
-      let w=img.width, h=img.height;
-      const ratio = Math.min(maxW/w, maxH/h, 1);
-      const cw = Math.round(w*ratio), ch = Math.round(h*ratio);
-      const c = document.createElement('canvas'); c.width = cw; c.height = ch;
-      const ctx = c.getContext('2d'); ctx.drawImage(img,0,0,cw,ch);
-      const out = c.toDataURL('image/jpeg', q); res(out);
+    const defaultItems = {
+      casual: ["T-shirts", "Pants", "Shoes", "Toothbrush"],
+      beach: ["Swimsuit", "Sunscreen", "Flip-flops", "Hat"],
+      business: ["Formal Suit", "Laptop", "Charger", "Notepad"],
+      trek: ["Trekking Shoes", "Water Bottle", "Jacket", "Snacks"]
     };
-    img.src = dataUrl;
-  });
-}
 
-/* ---------- list rendering ---------- */
-function renderList(){
-  const ul = $('itemsList'); ul.innerHTML='';
-  const p = profiles.find(x=>x.id===activeId); if(!p) return;
-  const items = activeCategory && activeCategory!=='All' ? p.items.filter(it=>it.compartment===activeCategory) : p.items;
-  if(items.length===0) ul.innerHTML = '<div class="muted">No items in this view. Tap + to add.</div>';
-  items.forEach(it=>{
-    const li = document.createElement('li');
-    li.innerHTML = `<div class="left">
-        ${it.photo? `<img src="${it.photo}" class="thumb">` : `<div class="thumb" style="display:flex;align-items:center;justify-content:center;color:var(--brand2)">📦</div>`}
-        <div><div class="title">${escapeHtml(it.text)} <span class="muted">×${it.qty}</span></div><div class="sub">${escapeHtml(it.compartment)}</div></div>
-      </div>
-      <div style="display:flex;gap:8px;align-items:center">
-        <button class="btn-ghost" data-toggle="${it.id}">${it.packed? 'Packed ✅':'Mark'}</button>
-        <button class="btn-ghost" data-del="${it.id}">Delete</button>
-      </div>`;
-    if(it.packed) li.style.opacity=0.6;
-    ul.appendChild(li);
-  });
-
-  // events (delegation approach)
-  ul.querySelectorAll('[data-toggle]').forEach(b=>b.addEventListener('click', e=>{
-    const id = e.currentTarget.dataset.toggle; togglePacked(id);
-  }));
-  ul.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click', e=>{
-    const id = e.currentTarget.dataset.del; if(confirm('Delete item?')) removeItem(id);
-  }));
-
-  renderGallery(); updateProgress(p);
-}
-
-/* gallery */
-function renderGallery(){
-  const grid = $('galleryGrid'); grid.innerHTML='';
-  const p = profiles.find(x=>x.id===activeId); if(!p) return;
-  p.items.filter(it=>it.photo).forEach(it=>{
-    const img = document.createElement('img'); img.src = it.photo; grid.appendChild(img);
-  });
-}
-
-/* toggle packed by id */
-function togglePacked(id){
-  const p = profiles.find(x=>x.id===activeId); if(!p) return;
-  const i = p.items.find(it=>it.id===id); if(!i) return; i.packed = !i.packed; saveProfiles(); renderList();
-}
-
-/* remove item */
-function removeItem(id){
-  const p = profiles.find(x=>x.id===activeId); if(!p) return;
-  p.items = p.items.filter(it=>it.id!==id); saveProfiles(); renderList();
-}
-
-/* progress */
-function updateProgress(profile){
-  const liters = profile.items.reduce((s,it)=>s + (it.qty * 2), 0);
-  const percent = Math.min(100, Math.round((liters/profile.bagCapacity) * 100));
-  $('progressBar').style.width = percent + '%';
-  $('usageText').textContent = `${liters}L / ${profile.bagCapacity}L (${percent}%)`;
-}
-
-/* helpers */
-function escapeHtml(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
-
-/* initial render */
-renderProfileList();
-
-/* register service worker */
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js').then(reg=>{
-    console.log('sw ok', reg);
-    // try to update immediately when installed
-    reg.addEventListener('updatefound', ()=> {
-      const nw = reg.installing;
-      nw.addEventListener('statechange', ()=> {
-        if(nw.state === 'installed' && navigator.serviceWorker.controller){
-          // new SW waiting — reload to apply
-          // optional: prompt user, for now auto-skip waiting
-          nw.postMessage({type:'SKIP_WAITING'});
-        }
+    function renderTrips() {
+      tripsDiv.innerHTML = "";
+      trips.forEach((trip, idx) => {
+        const daysLeft = Math.ceil((new Date(trip.date) - new Date())/ (1000*60*60*24));
+        const card = document.createElement("div");
+        card.className = "trip-card";
+        card.innerHTML = `
+          <h2>${trip.name} (${trip.type})</h2>
+          <p>📅 ${trip.date} — <b>${daysLeft >= 0 ? daysLeft+" days left" : "Completed"}</b></p>
+          <button onclick="addItem(${idx})" class="btn btn-primary">➕ Add Item</button>
+          <button onclick="smartPack(${idx})" class="btn btn-secondary">✨ Smart Pack</button>
+          <button onclick="deleteTrip(${idx})" class="btn btn-danger">🗑️ Delete Trip</button>
+          <div id="categories-${idx}"></div>
+          <div class="gallery" id="gallery-${idx}"></div>
+        `;
+        tripsDiv.appendChild(card);
+        renderCategories(idx);
       });
+    }
+
+    function renderCategories(tripIndex) {
+      const categoriesDiv = document.getElementById("categories-" + tripIndex);
+      categoriesDiv.innerHTML = "";
+      const categories = ["Clothes", "Accessories", "Electronics", "Skincare", "Travel Essentials"];
+      categories.forEach(cat => {
+        const section = document.createElement("div");
+        section.className = "category";
+        const items = trips[tripIndex].items.filter(i => i.category === cat);
+        const progress = items.length;
+        section.innerHTML = `
+          <h4 onclick="toggleItems(${tripIndex},'${cat}')">${cat} (${progress})</h4>
+          <div class="progress-bar"><div class="progress" style="width:${progress*25}%;"></div></div>
+          <div class="items" id="items-${tripIndex}-${cat}"></div>
+        `;
+        categoriesDiv.appendChild(section);
+        const itemsDiv = section.querySelector(".items");
+        items.forEach((item, i) => {
+          const row = document.createElement("div");
+          row.className = "item";
+          row.innerHTML = `
+            <div><img src="${item.photo||'icon-192.png'}"/> ${item.name}</div>
+            <button onclick="deleteItem(${tripIndex},${i})" class="btn btn-danger">x</button>
+          `;
+          itemsDiv.appendChild(row);
+        });
+        const galleryDiv = document.getElementById("gallery-" + tripIndex);
+        galleryDiv.innerHTML = "";
+        trips[tripIndex].items.forEach(it=>{
+          if(it.photo) {
+            const img=document.createElement("img");
+            img.src=it.photo;
+            galleryDiv.appendChild(img);
+          }
+        });
+      });
+      localStorage.setItem("trips", JSON.stringify(trips));
+    }
+
+    function toggleItems(tripIndex, cat) {
+      const el = document.getElementById(`items-${tripIndex}-${cat}`);
+      el.style.display = el.style.display === "block" ? "none" : "block";
+    }
+
+    document.getElementById("tripForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const trip = {
+        name: document.getElementById("tripName").value,
+        date: document.getElementById("tripDate").value,
+        type: document.getElementById("tripType").value,
+        items: []
+      };
+      trips.push(trip);
+      renderTrips();
+      e.target.reset();
     });
-  }).catch(e=>console.warn('sw err', e));
-}
-</script>
+
+    function addItem(tripIndex) {
+      const name = prompt("Item name?");
+      if (!name) return;
+      const cat = prompt("Category? (Clothes, Accessories, Electronics, Skincare, Travel Essentials)");
+      const photoInput = document.createElement("input");
+      photoInput.type = "file";
+      photoInput.accept = "image/*";
+      photoInput.capture = "environment";
+      photoInput.onchange = e=>{
+        const file = e.target.files[0];
+        const reader=new FileReader();
+        reader.onload = ()=>{
+          trips[tripIndex].items.push({name, category:cat, photo:reader.result});
+          renderTrips();
+        };
+        reader.readAsDataURL(file);
+      };
+      photoInput.click();
+    }
+
+    function smartPack(tripIndex) {
+      const type = trips[tripIndex].type;
+      defaultItems[type].forEach(it=>{
+        trips[tripIndex].items.push({name:it, category:"Clothes", photo:""});
+      });
+      renderTrips();
+    }
+
+    function deleteTrip(idx) {
+      trips.splice(idx,1);
+      renderTrips();
+    }
+    function deleteItem(tripIdx, itemIdx) {
+      trips[tripIdx].items.splice(itemIdx,1);
+      renderTrips();
+    }
+
+    renderTrips();
+
+    // PWA Install
+    let deferredPrompt;
+    const installBtn=document.getElementById("installBtn");
+    window.addEventListener("beforeinstallprompt", e=>{
+      e.preventDefault();
+      deferredPrompt=e;
+      installBtn.style.display="inline-block";
+    });
+    installBtn.addEventListener("click", ()=>{
+      if(deferredPrompt){ deferredPrompt.prompt(); }
+    });
+
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('./sw.js');
+    }
+  </script>
 </body>
 </html>
