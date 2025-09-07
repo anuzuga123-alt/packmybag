@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Packing Friend</title>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#0284c7"/>
+  <link rel="icon" href="./icon-192.png">
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f5f5f5; }
+    header { background: #0284c7; color: white; padding: 1rem; text-align: center; }
+    main { padding: 1rem; }
+    .btn { background: #0284c7; color: white; border: none; padding: 10px; border-radius: 6px; cursor: pointer; margin: 5px; }
+    .profile { border: 1px solid #ccc; border-radius: 6px; padding: 1rem; background: white; margin-bottom: 1rem; }
+    .category { margin-top: 1rem; }
+    img { max-width: 50px; display: block; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Your Packing Friend</h1>
+    <button id="installBtn" class="btn" style="display:none;">Install App</button>
+  </header>
+  <main>
+    <h2>Create New Trip</h2>
+    <input type="text" id="tripName" placeholder="Trip / Person Name">
+    <input type="date" id="tripDate">
+    <button class="btn" onclick="addTrip()">Add Trip</button>
+    <div id="trips"></div>
+  </main>
+
+  <script>
+    let deferredPrompt;
+    const installBtn = document.getElementById('installBtn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBtn.style.display = 'inline-block';
+    });
+    installBtn.addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.finally(() => deferredPrompt = null);
+      }
+    });
+
+    let trips = JSON.parse(localStorage.getItem('trips') || '[]');
+
+    function saveTrips(){ localStorage.setItem('trips', JSON.stringify(trips)); renderTrips(); }
+
+    function addTrip(){
+      const name = document.getElementById('tripName').value;
+      const date = document.getElementById('tripDate').value;
+      if(!name) return alert('Enter trip/person name');
+      trips.push({name, date, items:[]});
+      saveTrips();
+      document.getElementById('tripName').value = '';
+      document.getElementById('tripDate').value = '';
+    }
+
+    function deleteTrip(i){ if(confirm('Delete this trip?')){ trips.splice(i,1); saveTrips(); } }
+
+    function addItem(i,cat){
+      const val = prompt("Add item for " + cat);
+      if(val){ 
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = e => {
+          const file = e.target.files[0];
+          const reader = new FileReader();
+          reader.onload = () => {
+            trips[i].items.push({cat, val, img: reader.result});
+            saveTrips();
+          };
+          if(file) reader.readAsDataURL(file);
+        };
+        input.click();
+      }
+    }
+
+    function renderTrips(){
+      const container = document.getElementById('trips');
+      container.innerHTML = '';
+      trips.forEach((t,i)=>{
+        const div = document.createElement('div');
+        div.className = 'profile';
+        div.innerHTML = '<h3>'+t.name+' ('+(t.date || 'No Date')+')</h3>'+
+          '<button class="btn" onclick="deleteTrip('+i+')">Delete</button>'+
+          renderCategory(i,'Clothes')+
+          renderCategory(i,'Accessories')+
+          renderCategory(i,'Electronics')+
+          renderCategory(i,'Skincare')+
+          renderCategory(i,'Travel');
+        container.appendChild(div);
+      });
+    }
+
+    function renderCategory(i,cat){
+      let html = '<div class="category"><b>'+cat+':</b> <button class="btn" onclick="addItem('+i+',\''+cat+'\')">Add</button>';
+      trips[i].items.filter(x=>x.cat===cat).forEach(x=>{
+        html += '<div>'+x.val+(x.img?'<br><img src="'+x.img+'">':'')+'</div>';
+      });
+      return html + '</div>';
+    }
+
+    renderTrips();
+
+    if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js'); }
+  </script>
+</body>
+</html>
