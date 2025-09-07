@@ -1,4 +1,4 @@
-const CACHE_NAME = "packmybag-cache";
+const CACHE_NAME = "packmybag-v1";
 const OFFLINE_URLS = [
   "./index.html",
   "./manifest.json",
@@ -6,31 +6,34 @@ const OFFLINE_URLS = [
   "./icon-512.png"
 ];
 
-// Install and cache essentials
+// Install – pre-cache essential files
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => cache.addAll(OFFLINE_URLS))
   );
-  self.skipWaiting();
+  self.skipWaiting(); // activate new SW immediately
 });
 
-// Auto-update old service workers
+// Activate – clean old caches
 self.addEventListener("activate", event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
     )
   );
-  self.clients.claim();
+  self.clients.claim(); // control all tabs right away
 });
 
-// Network first, fallback to cache
+// Fetch – network first, fallback to cache
 self.addEventListener("fetch", event => {
   event.respondWith(
-    fetch(event.request).then(response => {
-      const copy = response.clone();
-      caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
-      return response;
-    }).catch(() => caches.match(event.request))
+    fetch(event.request)
+      .then(response => {
+        // clone & save fresh response in cache
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy));
+        return response;
+      })
+      .catch(() => caches.match(event.request)) // fallback if offline
   );
 });
