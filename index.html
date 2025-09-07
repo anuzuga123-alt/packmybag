@@ -164,7 +164,7 @@
         <input id="ai_qty" type="number" value="1" style="max-width:120px" />
         <select id="ai_cat">
           <option>Clothes</option><option>Accessories</option><option>Electronics</option>
-          <option>Skincare</option><option>Toiletries</option><option>Travel Essentials</option>
+          <option>Skincare</option><option>Medicine</option><option>Travel Essentials</option>
         </select>
       </div>
       <div style="margin-bottom:8px">
@@ -181,7 +181,7 @@
 <script>
 /* ---------------- Storage model & helpers ---------------- */
 const STORAGE_KEY = 'ypf_profiles_v1';
-const categories = ['Clothes','Accessories','Electronics','Skincare','Toiletries','Travel Essentials'];
+const categories = ['Clothes','Accessories','Electronics','Skincare','Medicine','Travel Essentials'];
 let profiles = JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
 let activeId = null;
 let activeCategory = null; // null means all
