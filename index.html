@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pack My Bag – Travel Organizer</title>
+  <title>Your Packing Friend</title>
   <meta name="theme-color" content="#0f172a" />
   <link rel="manifest" href="manifest.json" />
   <link rel="icon" href="icon-192.png" />
@@ -13,7 +13,6 @@
     .container { width:100%; max-width:700px; padding:20px; }
     .card { background:#1e293b; border-radius:12px; padding:15px; margin-bottom:20px; box-shadow:0 2px 6px rgba(0,0,0,0.4); }
     h2 { color:#38bdf8; margin-top:0; }
-    p { color:#94a3b8; margin:8px 0; }
     .profile-card { background:#0f172a; padding:12px; margin:8px 0; border-radius:10px; cursor:pointer; transition:0.2s; }
     .profile-card:hover { background:#0ea5e9; color:#0f172a; }
     .input-row { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:10px; }
@@ -36,7 +35,7 @@
   </style>
 </head>
 <body>
-<header>🎒 Pack My Bag</header>
+<header>🎒 Your Packing Friend</header>
 <div class="container">
 
   <!-- Profile Selector -->
@@ -78,7 +77,7 @@
     <div class="tabs" id="compartmentTabs"></div>
 
     <div id="checklistView" class="card">
-      <h2>Checklist</h2>
+      <h2 id="checklistTitle"></h2>
       <ul id="packingList"></ul>
     </div>
 
@@ -92,12 +91,10 @@
 </div>
 
 <script>
-  // Data
   let profiles = JSON.parse(localStorage.getItem("profiles")) || [];
   let activeProfileId = null;
   let activeCompartment = "Clothes";
 
-  // Profile management
   function renderProfiles() {
     const list = document.getElementById("profileList");
     list.innerHTML = "";
@@ -143,7 +140,6 @@
     localStorage.setItem("profiles", JSON.stringify(profiles));
   }
 
-  // Items
   function addItem() {
     const input = document.getElementById("itemInput");
     const qtyInput = document.getElementById("qtyInput");
@@ -197,7 +193,10 @@
   function renderList(){
     const p=profiles.find(x=>x.id===activeProfileId);
     const list=document.getElementById("packingList");
+    const title=document.getElementById("checklistTitle");
     list.innerHTML="";
+    title.textContent = activeCompartment + " Checklist";
+
     const filtered=p.items.filter(i=>i.compartment===activeCompartment);
     filtered.forEach((item,idx)=>{
       const li=document.createElement("li");
@@ -211,18 +210,14 @@
       list.appendChild(li);
     });
 
-    // Gallery
     const gallery=document.getElementById("galleryGrid");
     gallery.innerHTML="";
-    p.items.forEach(item=>{
-      if(item.photo){
-        const img=document.createElement("img");
-        img.src=item.photo;
-        gallery.appendChild(img);
-      }
+    p.items.filter(i=>i.photo).forEach(item=>{
+      const img=document.createElement("img");
+      img.src=item.photo;
+      gallery.appendChild(img);
     });
 
-    // Progress
     updateProgress(p);
   }
 
@@ -233,7 +228,6 @@
     document.getElementById("progressText").textContent=`${used}L of ${profile.bagCapacity}L used (${percent}%)`;
   }
 
-  // Init
   renderProfiles();
 
   if('serviceWorker' in navigator){
