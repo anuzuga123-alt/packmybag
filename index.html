@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pack My Bag – Travel Assistant</title>
   <link rel="manifest" href="./manifest.json"/>
@@ -9,103 +9,64 @@
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(135deg, #6dd5fa, #2980b9);
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    header {
-      text-align: center;
-      padding: 1rem;
-      background: rgba(0,0,0,0.2);
-    }
-    h1 {
-      margin: 0;
-      font-size: 1.8rem;
-    }
-    main {
-      flex: 1;
-      padding: 1rem;
-      overflow-y: auto;
-    }
-    .trip-card {
-      background: #fff;
+      margin: 0; padding: 0;
+      background: linear-gradient(135deg, #89f7fe, #66a6ff);
       color: #333;
-      border-radius: 12px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      transition: transform .2s;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
     }
-    .trip-card:hover { transform: scale(1.02); }
+    header { text-align: center; padding: 1rem; color: #fff; }
+    h1 { margin: 0; font-size: 1.8rem; }
+    main { flex: 1; padding: 1rem; overflow-y: auto; }
+    .trip-card {
+      background: #fff; border-radius: 12px;
+      padding: 1rem; margin-bottom: 1rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
     .btn {
-      padding: .6rem 1rem;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: bold;
-      margin: .2rem;
+      padding: .5rem 1rem; border: none; border-radius: 6px;
+      cursor: pointer; font-weight: bold;
     }
-    .btn-primary { background: linear-gradient(45deg, #00c6ff, #0072ff); color: white; }
-    .btn-danger { background: crimson; color: white; }
+    .btn-primary { background: #0072ff; color: white; }
     .btn-secondary { background: #eee; color: #333; }
-    .progress-bar {
-      background: #eee;
-      border-radius: 6px;
-      overflow: hidden;
-      margin: .3rem 0;
-    }
-    .progress {
-      height: 8px;
-      background: linear-gradient(90deg, #00c6ff, #0072ff);
-    }
-    .category {
-      margin-top: .5rem;
-      background: #f4f4f4;
-      padding: .5rem;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .category h4 { margin: 0; font-size: 1rem; color: #0072ff; }
-    .items { display: none; padding-top: .4rem; }
+    .btn-danger { background: #e74c3c; color: white; }
+    .progress-bar { background: #eee; border-radius: 6px; overflow: hidden; margin: .3rem 0; }
+    .progress { height: 8px; background: linear-gradient(90deg,#00c6ff,#0072ff); }
+    .category { margin-top: .5rem; padding: .4rem; background: #f9f9f9; border-radius: 6px; }
+    .category h4 { margin: 0; font-size: 1rem; color: #0072ff; cursor: pointer; }
+    .items { display: none; margin-top: .4rem; }
     .item {
       display: flex; align-items: center; justify-content: space-between;
-      margin: .3rem 0;
-      background: #fff;
-      border-radius: 6px;
-      padding: .3rem .6rem;
-      color: #333;
+      margin: .3rem 0; background: #fff; border-radius: 6px; padding: .3rem .6rem;
     }
-    .item img { width: 32px; height: 32px; border-radius: 4px; margin-right: .5rem; }
+    .item img { width: 32px; height: 32px; border-radius: 4px; margin-right: .5rem; object-fit: cover; }
     .gallery { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; }
     .gallery img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
     #tripForm {
       display: flex; flex-direction: column; gap: .5rem;
-      background: rgba(255,255,255,0.2);
-      padding: 1rem;
-      border-radius: 12px;
+      background: rgba(255,255,255,0.8); padding: 1rem; border-radius: 12px;
       margin-bottom: 1rem;
     }
-    input, select {
-      padding: .5rem; border-radius: 6px; border: none;
+    input, select { padding: .5rem; border-radius: 6px; border: 1px solid #ccc; }
+    footer { background: rgba(255,255,255,0.2); padding: .6rem; text-align: center; }
+    /* Modal */
+    .modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center;
     }
-    footer {
-      background: rgba(0,0,0,0.2);
-      padding: .6rem;
-      text-align: center;
+    .modal-content {
+      background: #fff; padding: 1rem; border-radius: 12px; width: 90%; max-width: 400px;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>✈️ Pack My Bag – Travel Assistant</h1>
-    <p>Your smart packing companion</p>
+    <h1>✈️ Pack My Bag</h1>
+    <p>Your smart travel assistant</p>
   </header>
 
   <main>
+    <!-- Trip form -->
     <form id="tripForm">
       <input type="text" id="tripName" placeholder="Trip Name (e.g. Goa)" required/>
       <input type="date" id="tripDate" required/>
@@ -117,16 +78,41 @@
       </select>
       <button type="submit" class="btn btn-primary">➕ Add Trip</button>
     </form>
+
+    <!-- Trip list -->
     <div id="trips"></div>
   </main>
 
   <footer>
-    <button id="installBtn" class="btn btn-secondary">📲 Install Travel Assistant</button>
+    <button id="installBtn" class="btn btn-secondary">📲 Install App</button>
   </footer>
+
+  <!-- Modal for Add Item -->
+  <div class="modal" id="itemModal">
+    <div class="modal-content">
+      <h3>Add Item</h3>
+      <input type="text" id="itemName" placeholder="Item name" required/>
+      <select id="itemCategory">
+        <option>Clothes</option>
+        <option>Accessories</option>
+        <option>Electronics</option>
+        <option>Skincare</option>
+        <option>Travel Essentials</option>
+      </select>
+      <input type="file" id="itemPhoto" accept="image/*" capture="environment"/>
+      <button id="saveItemBtn" class="btn btn-primary">Save Item</button>
+      <button id="cancelItemBtn" class="btn btn-secondary">Cancel</button>
+    </div>
+  </div>
 
   <script>
     let trips = JSON.parse(localStorage.getItem("trips") || "[]");
+    let currentTripIndex = null;
+
     const tripsDiv = document.getElementById("trips");
+    const itemModal = document.getElementById("itemModal");
+    const saveItemBtn = document.getElementById("saveItemBtn");
+    const cancelItemBtn = document.getElementById("cancelItemBtn");
 
     const defaultItems = {
       casual: ["T-shirts", "Pants", "Shoes", "Toothbrush"],
@@ -144,7 +130,7 @@
         card.innerHTML = `
           <h2>${trip.name} (${trip.type})</h2>
           <p>📅 ${trip.date} — <b>${daysLeft >= 0 ? daysLeft+" days left" : "Completed"}</b></p>
-          <button onclick="addItem(${idx})" class="btn btn-primary">➕ Add Item</button>
+          <button onclick="openAddItem(${idx})" class="btn btn-primary">➕ Add Item</button>
           <button onclick="smartPack(${idx})" class="btn btn-secondary">✨ Smart Pack</button>
           <button onclick="deleteTrip(${idx})" class="btn btn-danger">🗑️ Delete Trip</button>
           <div id="categories-${idx}"></div>
@@ -158,113 +144,86 @@
     function renderCategories(tripIndex) {
       const categoriesDiv = document.getElementById("categories-" + tripIndex);
       categoriesDiv.innerHTML = "";
-      const categories = ["Clothes", "Accessories", "Electronics", "Skincare", "Travel Essentials"];
+      const categories = ["Clothes","Accessories","Electronics","Skincare","Travel Essentials"];
       categories.forEach(cat => {
         const section = document.createElement("div");
         section.className = "category";
         const items = trips[tripIndex].items.filter(i => i.category === cat);
-        const progress = items.length;
         section.innerHTML = `
-          <h4 onclick="toggleItems(${tripIndex},'${cat}')">${cat} (${progress})</h4>
-          <div class="progress-bar"><div class="progress" style="width:${progress*25}%;"></div></div>
+          <h4 onclick="toggleItems(${tripIndex},'${cat}')">${cat} (${items.length})</h4>
+          <div class="progress-bar"><div class="progress" style="width:${items.length*25}%;"></div></div>
           <div class="items" id="items-${tripIndex}-${cat}"></div>
         `;
         categoriesDiv.appendChild(section);
         const itemsDiv = section.querySelector(".items");
-        items.forEach((item, i) => {
-          const row = document.createElement("div");
-          row.className = "item";
-          row.innerHTML = `
+        items.forEach((item,i)=>{
+          const row=document.createElement("div");
+          row.className="item";
+          row.innerHTML=`
             <div><img src="${item.photo||'icon-192.png'}"/> ${item.name}</div>
             <button onclick="deleteItem(${tripIndex},${i})" class="btn btn-danger">x</button>
           `;
           itemsDiv.appendChild(row);
         });
-        const galleryDiv = document.getElementById("gallery-" + tripIndex);
-        galleryDiv.innerHTML = "";
+        const galleryDiv=document.getElementById("gallery-"+tripIndex);
+        galleryDiv.innerHTML="";
         trips[tripIndex].items.forEach(it=>{
-          if(it.photo) {
-            const img=document.createElement("img");
-            img.src=it.photo;
-            galleryDiv.appendChild(img);
-          }
+          if(it.photo){ let img=document.createElement("img"); img.src=it.photo; galleryDiv.appendChild(img); }
         });
       });
       localStorage.setItem("trips", JSON.stringify(trips));
     }
 
-    function toggleItems(tripIndex, cat) {
-      const el = document.getElementById(`items-${tripIndex}-${cat}`);
-      el.style.display = el.style.display === "block" ? "none" : "block";
+    function toggleItems(tripIndex,cat){
+      const el=document.getElementById(`items-${tripIndex}-${cat}`);
+      el.style.display=el.style.display==="block"?"none":"block";
     }
 
-    document.getElementById("tripForm").addEventListener("submit", e => {
+    document.getElementById("tripForm").addEventListener("submit", e=>{
       e.preventDefault();
-      const trip = {
-        name: document.getElementById("tripName").value,
-        date: document.getElementById("tripDate").value,
-        type: document.getElementById("tripType").value,
-        items: []
-      };
-      trips.push(trip);
-      renderTrips();
-      e.target.reset();
+      trips.push({name:tripName.value,date:tripDate.value,type:tripType.value,items:[]});
+      renderTrips(); e.target.reset();
     });
 
-    function addItem(tripIndex) {
-      const name = prompt("Item name?");
-      if (!name) return;
-      const cat = prompt("Category? (Clothes, Accessories, Electronics, Skincare, Travel Essentials)");
-      const photoInput = document.createElement("input");
-      photoInput.type = "file";
-      photoInput.accept = "image/*";
-      photoInput.capture = "environment";
-      photoInput.onchange = e=>{
-        const file = e.target.files[0];
+    function openAddItem(idx){ currentTripIndex=idx; itemModal.style.display="flex"; }
+    cancelItemBtn.onclick=()=>{ itemModal.style.display="none"; };
+
+    saveItemBtn.onclick=()=>{
+      const name=document.getElementById("itemName").value;
+      const category=document.getElementById("itemCategory").value;
+      const photo=document.getElementById("itemPhoto").files[0];
+      if(!name){alert("Enter item name");return;}
+      if(photo){
         const reader=new FileReader();
-        reader.onload = ()=>{
-          trips[tripIndex].items.push({name, category:cat, photo:reader.result});
-          renderTrips();
-        };
-        reader.readAsDataURL(file);
-      };
-      photoInput.click();
-    }
+        reader.onload=()=>{ trips[currentTripIndex].items.push({name,category,photo:reader.result}); renderTrips(); };
+        reader.readAsDataURL(photo);
+      } else {
+        trips[currentTripIndex].items.push({name,category,photo:""});
+        renderTrips();
+      }
+      itemModal.style.display="none";
+      document.getElementById("itemName").value="";
+      document.getElementById("itemPhoto").value="";
+    };
 
-    function smartPack(tripIndex) {
-      const type = trips[tripIndex].type;
-      defaultItems[type].forEach(it=>{
-        trips[tripIndex].items.push({name:it, category:"Clothes", photo:""});
-      });
+    function smartPack(idx){
+      defaultItems[trips[idx].type].forEach(it=>trips[idx].items.push({name:it,category:"Clothes",photo:""}));
       renderTrips();
     }
-
-    function deleteTrip(idx) {
-      trips.splice(idx,1);
-      renderTrips();
-    }
-    function deleteItem(tripIdx, itemIdx) {
-      trips[tripIdx].items.splice(itemIdx,1);
-      renderTrips();
-    }
+    function deleteTrip(idx){ trips.splice(idx,1); renderTrips(); }
+    function deleteItem(tripIdx,itemIdx){ trips[tripIdx].items.splice(itemIdx,1); renderTrips(); }
 
     renderTrips();
 
-    // PWA Install
+    // Install PWA
     let deferredPrompt;
-    const installBtn=document.getElementById("installBtn");
-    window.addEventListener("beforeinstallprompt", e=>{
-      e.preventDefault();
-      deferredPrompt=e;
-      installBtn.style.display="inline-block";
+    installBtn.style.display="none";
+    window.addEventListener("beforeinstallprompt",e=>{
+      e.preventDefault(); deferredPrompt=e; installBtn.style.display="inline-block";
     });
-    installBtn.addEventListener("click", ()=>{
-      if(deferredPrompt){ deferredPrompt.prompt(); }
-    });
+    installBtn.addEventListener("click",()=>{ if(deferredPrompt) deferredPrompt.prompt(); });
 
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.register('./sw.js');
-    }
+    if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js'); }
   </script>
 </body>
 </html>
