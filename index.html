@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pack My Bag</title>
-  <meta name="description" content="Plan smarter trips: build your packing list with categories, track progress, and pack stress-free." />
+  <meta name="description" content="Plan smarter trips: choose your bag, track liters, and build a categorized packing list." />
   <meta name="theme-color" content="#0f172a" />
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
@@ -25,17 +25,29 @@
       color:#22d3ee;
       margin-bottom:10px;
     }
+    h2 {
+      color:#38bdf8;
+      margin-top:20px;
+    }
     p {
       color:#94a3b8;
-      margin-bottom:20px;
+      margin-bottom:15px;
       text-align:center;
     }
-    .input-area {
-      display:flex;
-      gap:10px;
+    .card {
+      background:#1e293b;
+      padding:15px;
+      border-radius:12px;
       margin-bottom:20px;
       width:100%;
       max-width:500px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.4);
+    }
+    .input-row {
+      display:flex;
+      gap:10px;
+      margin-bottom:10px;
+      flex-wrap:wrap;
     }
     input, select {
       flex:1;
@@ -53,56 +65,34 @@
       font-weight:bold;
       transition:0.2s;
     }
-    .primary {
-      background:#22d3ee;
-      color:#0f172a;
-    }
-    .primary:hover {
-      background:#0ea5e9;
-    }
+    .primary { background:#22d3ee; color:#0f172a; }
+    .primary:hover { background:#0ea5e9; }
     ul {
       list-style:none;
       padding:0;
       margin-top:10px;
       width:100%;
-      max-width:500px;
     }
     li {
-      background:#1e293b;
-      margin:8px 0;
-      padding:12px;
-      border-radius:10px;
+      background:#0f172a;
+      margin:6px 0;
+      padding:10px;
+      border-radius:8px;
       display:flex;
       justify-content:space-between;
       align-items:center;
-      box-shadow:0 2px 6px rgba(0,0,0,0.4);
-      transition:0.3s;
     }
-    li.packed {
-      text-decoration: line-through;
-      opacity:0.6;
-    }
-    .category {
-      font-size:14px;
-      color:#22d3ee;
-      margin-left:8px;
-    }
-    .actions button {
-      margin-left:8px;
-      background:transparent;
-      color:#f87171;
-      font-size:18px;
-    }
+    li.packed { text-decoration: line-through; opacity:0.6; }
+    .category { font-size:13px; color:#22d3ee; margin-left:5px; }
     .progress {
-      margin-top:20px;
-      width:100%;
-      max-width:500px;
+      margin-top:10px;
       background:#1e293b;
       border-radius:10px;
       overflow:hidden;
+      height:12px;
     }
     .progress-bar {
-      height:10px;
+      height:100%;
       background:#22d3ee;
       width:0%;
       transition:width 0.4s ease;
@@ -111,41 +101,81 @@
 </head>
 <body>
   <h1>🎒 Pack My Bag</h1>
-  <p>Organize your travel essentials by category. Mark items as packed ✅ and track your progress below.</p>
 
-  <div class="input-area">
-    <input type="text" id="itemInput" placeholder="Enter item (e.g., T-Shirt)" />
-    <select id="categorySelect">
-      <option value="👕 Clothes">👕 Clothes</option>
-      <option value="📱 Gadgets">📱 Gadgets</option>
-      <option value="🧴 Toiletries">🧴 Toiletries</option>
-      <option value="📄 Documents">📄 Documents</option>
-      <option value="🍫 Snacks">🍫 Snacks</option>
-    </select>
-    <button class="primary" onclick="addItem()">Add</button>
+  <!-- Bag Setup -->
+  <div class="card">
+    <h2>Bag Setup</h2>
+    <p>Select your bag type and capacity.</p>
+    <div class="input-row">
+      <select id="bagType">
+        <option value="Backpack">🎒 Backpack</option>
+        <option value="Suitcase">🧳 Suitcase</option>
+        <option value="Duffel">👜 Duffel Bag</option>
+      </select>
+      <input type="number" id="bagCapacity" placeholder="Liters (e.g. 40)" />
+    </div>
   </div>
 
-  <ul id="packingList"></ul>
-
-  <div class="progress">
-    <div class="progress-bar" id="progressBar"></div>
+  <!-- Packing List -->
+  <div class="card">
+    <h2>Packing List</h2>
+    <div class="input-row">
+      <input type="text" id="itemInput" placeholder="Enter item (e.g., T-Shirt)" />
+      <input type="number" id="qtyInput" placeholder="Qty" min="1" value="1" />
+    </div>
+    <div class="input-row">
+      <select id="categorySelect">
+        <option value="👕 Clothes">👕 Clothes</option>
+        <option value="📱 Gadgets">📱 Gadgets</option>
+        <option value="🧴 Toiletries">🧴 Toiletries</option>
+        <option value="📄 Documents">📄 Documents</option>
+        <option value="🍫 Snacks">🍫 Snacks</option>
+      </select>
+      <button class="primary" onclick="addItem()">Add</button>
+    </div>
+    <ul id="packingList"></ul>
+    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+    <p id="progressText"></p>
   </div>
 
 <script>
   const input = document.getElementById("itemInput");
+  const qtyInput = document.getElementById("qtyInput");
   const categorySelect = document.getElementById("categorySelect");
   const list = document.getElementById("packingList");
   const progressBar = document.getElementById("progressBar");
+  const progressText = document.getElementById("progressText");
+  const bagCapacityInput = document.getElementById("bagCapacity");
 
+  // Load data
   let items = JSON.parse(localStorage.getItem("packingList")) || [];
+  let bagType = localStorage.getItem("bagType") || "Backpack";
+  let bagCapacity = parseInt(localStorage.getItem("bagCapacity")) || 40;
+
+  document.getElementById("bagType").value = bagType;
+  bagCapacityInput.value = bagCapacity;
+
   renderList();
+
+  // Bag type & capacity changes
+  document.getElementById("bagType").addEventListener("change", e => {
+    bagType = e.target.value;
+    localStorage.setItem("bagType", bagType);
+  });
+  bagCapacityInput.addEventListener("input", e => {
+    bagCapacity = parseInt(e.target.value) || 0;
+    localStorage.setItem("bagCapacity", bagCapacity);
+    updateProgress();
+  });
 
   function addItem() {
     const value = input.value.trim();
+    const qty = parseInt(qtyInput.value) || 1;
     const category = categorySelect.value;
     if (!value) return;
-    items.push({ text: value, packed: false, category });
+    items.push({ text: value, qty, packed: false, category });
     input.value = "";
+    qtyInput.value = 1;
     saveAndRender();
   }
 
@@ -170,10 +200,8 @@
       const li = document.createElement("li");
       li.className = item.packed ? "packed" : "";
       li.innerHTML = \`
-        <span onclick="togglePacked(\${i})">\${item.text} <span class="category">\${item.category}</span></span>
-        <div class="actions">
-          <button onclick="removeItem(\${i})">✖</button>
-        </div>
+        <span onclick="togglePacked(\${i})">\${item.qty} × \${item.text} <span class="category">\${item.category}</span></span>
+        <button onclick="removeItem(\${i})">❌</button>
       \`;
       list.appendChild(li);
     });
@@ -181,18 +209,21 @@
   }
 
   function updateProgress() {
-    if (items.length === 0) {
+    if (!bagCapacity || items.length === 0) {
       progressBar.style.width = "0%";
+      progressText.textContent = "No items yet.";
       return;
     }
-    const packedCount = items.filter(item => item.packed).length;
-    const percent = Math.round((packedCount / items.length) * 100);
+    // assume each item = 2L × qty
+    const litersUsed = items.reduce((sum, i) => sum + (i.qty * 2), 0);
+    const percent = Math.min(100, Math.round((litersUsed / bagCapacity) * 100));
     progressBar.style.width = percent + "%";
+    progressText.textContent = \`\${litersUsed}L of \${bagCapacity}L used (\${percent}%)\`;
   }
 
-  // Register service worker
+  // Register service worker (force update with version bump)
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js')
+    navigator.serviceWorker.register('./sw.js?version=3')
       .then(() => console.log('Service Worker Registered'))
       .catch(err => console.error('SW registration failed:', err));
   }
