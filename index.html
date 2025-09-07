@@ -35,15 +35,89 @@
       color:#000;
       font-weight:bold;
     }
+    ul {
+      list-style: none;
+      padding:0;
+      margin-top:20px;
+    }
+    li {
+      background:#1f2937;
+      margin:5px 0;
+      padding:10px;
+      border-radius:6px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    li.packed {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+    input {
+      padding:8px;
+      border-radius:6px;
+      border:none;
+      margin-right:10px;
+    }
   </style>
 </head>
 <body>
   <h1>🎒 Pack My Bag</h1>
   <p>Plan, pack, and optimize your travel bag with smart suggestions. This app works offline too!</p>
 
-  <button class="primary" onclick="alert('Imagine packing items here!')">Add Item</button>
+  <!-- Add item input -->
+  <input type="text" id="itemInput" placeholder="Enter item..." />
+  <button class="primary" onclick="addItem()">Add Item</button>
+
+  <!-- Packing list -->
+  <ul id="packingList"></ul>
 
   <script>
+    const input = document.getElementById("itemInput");
+    const list = document.getElementById("packingList");
+
+    // Load saved list
+    let items = JSON.parse(localStorage.getItem("packingList")) || [];
+    renderList();
+
+    function addItem() {
+      const value = input.value.trim();
+      if (value) {
+        items.push({ text: value, packed: false });
+        input.value = "";
+        saveAndRender();
+      }
+    }
+
+    function togglePacked(index) {
+      items[index].packed = !items[index].packed;
+      saveAndRender();
+    }
+
+    function removeItem(index) {
+      items.splice(index, 1);
+      saveAndRender();
+    }
+
+    function saveAndRender() {
+      localStorage.setItem("packingList", JSON.stringify(items));
+      renderList();
+    }
+
+    function renderList() {
+      list.innerHTML = "";
+      items.forEach((item, i) => {
+        const li = document.createElement("li");
+        li.className = item.packed ? "packed" : "";
+        li.innerHTML = `
+          <span onclick="togglePacked(${i})">${item.text}</span>
+          <button onclick="removeItem(${i})">❌</button>
+        `;
+        list.appendChild(li);
+      });
+    }
+
+    // Register service worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js')
         .then(() => console.log('Service Worker Registered'))
