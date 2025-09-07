@@ -1,12 +1,11 @@
 {
-  "name": "Pack My Bag",
-  "short_name": "PackBag",
-  "description": "Plan, pack, and optimize your travel bag with smart suggestions.",
-  "start_url": "/packmybag/index.html",
+  "name": "Your Packing Friend",
+  "short_name": "PackingFriend",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#0b0c10",
-  "theme_color": "#0b0c10",
-  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
   "icons": [
     {
       "src": "icon-192.png",
