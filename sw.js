@@ -1,4 +1,4 @@
-const CACHE_NAME = "packingfriend-v4";
+const CACHE_NAME = "packingfriend-v5";
 const OFFLINE_URLS = [
   "./index.html",
   "./manifest.json",
